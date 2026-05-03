@@ -1,5 +1,23 @@
-if true then return end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+return function()
+  -- Fix clipboard for macOS
+  vim.opt.clipboard = "unnamedplus"
 
--- This will run last in the setup process.
--- This is just pure lua so anything that doesn't
--- fit in the normal config locations above can go here
+  -- Force Alpha dashboard on directory open
+  vim.api.nvim_create_autocmd("VimEnter", {
+    desc = "Start Alpha dashboard when opening a directory",
+    callback = function()
+      local arg = vim.fn.argv(0)
+      if arg ~= nil and vim.fn.isdirectory(arg) == 1 then
+        vim.schedule(function()
+          -- Force close the directory buffer to clear the UI
+          vim.cmd "silent! bwipeout!"
+          
+          local ok, alpha = pcall(require, "alpha")
+          if ok then 
+            alpha.start(false) 
+          end
+        end)
+      end
+    end,
+  })
+end
