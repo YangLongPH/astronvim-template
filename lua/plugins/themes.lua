@@ -1,21 +1,62 @@
 return {
-  { "sainnhe/sonokai", lazy = false, priority = 1000 },
-  { "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
-  { "folke/tokyonight.nvim", lazy = false, priority = 1000 },
-  { "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
-  { "sainnhe/everforest", lazy = false, priority = 1000 },
+  {
+    "sainnhe/sonokai",
+    lazy = false,
+    priority = 1000,
+    init = function()
+      vim.g.sonokai_transparent_background = 1
+      vim.g.sonokai_enable_italic = 1
+      vim.g.sonokai_disable_terminal_colors = 0
+    end,
+  },
+  {
+    "rebelot/kanagawa.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      transparent = true,
+      commentStyle = { italic = true },
+    },
+  },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      transparent = true,
+      styles = { comments = { italic = true } },
+    },
+  },
+  {
+    "EdenEast/nightfox.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      options = {
+        transparent = true,
+        styles = { comments = "italic" },
+      },
+    },
+  },
+  {
+    "sainnhe/everforest",
+    lazy = false,
+    priority = 1000,
+    init = function()
+      vim.g.everforest_transparent_background = 1
+      vim.g.everforest_enable_italic = 1
+    end,
+  },
   {
     "scottmckendry/cyberdream.nvim",
     lazy = false,
     priority = 1000,
     opts = {
-      transparent = true,          -- Required to show Ghostty background color
-      italic_comments = true,     -- Render comments in italic
-      hide_fillchars = true,      -- Remove ~ characters on empty lines
-      borderless_pickers = true,  -- Remove borders from picker windows (e.g. Telescope)
-      theme = {
-        variant = "default",      -- Always use the dark variant
-      },
+      transparent = true,
+      italic_comments = true,
+      hide_fillchars = true,
+      borderless_pickers = true,
+      theme = { variant = "default" },
     },
-  }
+  },
 }
