@@ -83,22 +83,67 @@ return {
           desc = "Restore directory session using Resession.nvim",
           callback = function()
             local arg = vim.fn.argv(0)
-            -- Only trigger if opening a directory
             if arg ~= nil and vim.fn.isdirectory(arg) == 1 then
-              -- Set working directory to the target folder
               vim.api.nvim_set_current_dir(arg)
-              
-              -- Always show Neo-tree sidebar for context
-              vim.cmd("Neotree show")
-              
-              -- Schedule session restoration to ensure all plugins are ready
               vim.defer_fn(function()
                 local ok, resession = pcall(require, "resession")
                 if ok then
-                  -- Attempt to load the session for the current directory
                   resession.load(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
+                  vim.g.resession_dir_active = true
+                  vim.g.resession_project_cwd = vim.fn.getcwd()
                 end
-              end, 100) -- 100ms delay to stabilize UI
+                vim.cmd("Neotree show")
+              end, 100)
+            end
+          end,
+        },
+      },
+      -- Snapshot visible state BEFORE windows close (ExitPre fires before QuitPre/window closure)
+      snapshot_state_on_exit = {
+        {
+          event = "ExitPre",
+          desc = "Snapshot terminal and claude visibility before windows close",
+          callback = function()
+            -- Snapshot toggleterm IDs that are currently visible in a window
+            local ids = {}
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              local buf = vim.api.nvim_win_get_buf(win)
+              if vim.bo[buf].buftype == "terminal" then
+                local name = vim.api.nvim_buf_get_name(buf)
+                local id = name:match("#toggleterm#(%d+)$")
+                if id then table.insert(ids, tonumber(id)) end
+              end
+            end
+            vim.g.snapshot_toggleterm_ids = ids
+
+            -- Snapshot claude: visible non-toggleterm terminal window + server running
+            local claude_visible = false
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              local buf = vim.api.nvim_win_get_buf(win)
+              if vim.bo[buf].buftype == "terminal" and vim.bo[buf].filetype ~= "toggleterm" then
+                local name = vim.api.nvim_buf_get_name(buf)
+                if not name:match("#toggleterm#") then
+                  local ok, claudecode = pcall(require, "claudecode")
+                  if ok and claudecode.state and claudecode.state.server then
+                    claude_visible = true
+                  end
+                end
+              end
+            end
+            vim.g.snapshot_claude_open = claude_visible
+          end,
+        },
+      },
+      -- Save session on quit so terminal/neo-tree/claude state is always persisted
+      save_session_on_quit = {
+        {
+          event = "VimLeavePre",
+          desc = "Save directory session using Resession.nvim",
+          callback = function()
+            if not vim.g.resession_dir_active then return end
+            local ok, resession = pcall(require, "resession")
+            if ok then
+              resession.save(vim.fn.getcwd(), { dir = "dirsession", notify = false })
             end
           end,
         },
