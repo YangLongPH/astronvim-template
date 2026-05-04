@@ -2,6 +2,7 @@ return function()
   -- Fix clipboard for macOS
   vim.opt.clipboard = "unnamedplus"
 
+
   -- Force Alpha dashboard on directory open
   vim.api.nvim_create_autocmd("VimEnter", {
     desc = "Start Alpha dashboard when opening a directory",

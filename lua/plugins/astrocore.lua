@@ -76,6 +76,14 @@ return {
     },
     -- Autocommands
     autocmds = {
+      -- Jenkinsfile → groovy filetype
+      jenkinsfile_ft = {
+        {
+          event = { "BufRead", "BufNewFile" },
+          pattern = { "Jenkinsfile", "Jenkinsfile.*", "*.jenkinsfile" },
+          callback = function() vim.bo.filetype = "groovy" end,
+        },
+      },
       -- Automatically restore the last session when opening a directory
       restore_session_on_dir = {
         {
