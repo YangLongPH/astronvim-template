@@ -67,11 +67,55 @@ return {
         
         -- Delete line without copying to register (no yank)
         ["x"] = { '"_dd', desc = "Delete line (no yank)" },
+
+        -- Smart open file under cursor (works in any buffer including terminal output)
+        ["<F3>"] = {
+          function()
+            local so = require("smart_open")
+            local token = so.get_cursor_token()
+            local cfile = vim.fn.expand("<cfile>")
+            local cword = vim.fn.expand("<cword>")
+            local cWORD = vim.fn.expand("<cWORD>")
+            local query = token ~= "" and token or cfile ~= "" and cfile or cword
+            vim.notify(
+              string.format("F3 fired | token=%q cfile=%q cword=%q cWORD=%q → query=%q", token, cfile, cword, cWORD, query),
+              vim.log.levels.INFO
+            )
+            if query ~= "" then so.open(query) end
+          end,
+          desc = "Smart open file under cursor",
+        },
       },
       
       v = {
         -- Delete selection without copying to register (no yank)
         ["x"] = { '"_d', desc = "Delete selection (no yank)" },
+        -- Smart open: yank visual selection → auto-open or picker
+        ["<F3>"] = {
+          function()
+            vim.cmd('normal! "zy')
+            require("smart_open").open(vim.fn.getreg("z"))
+          end,
+          desc = "Smart open selected as file name",
+        },
+      },
+
+      t = {
+        -- Smart open: word under cursor → auto-open or picker (F3 avoids Claude Code conflicts)
+        ["<F3>"] = {
+          function()
+            -- Extract full token at cursor before exiting terminal mode
+            local so = require("smart_open")
+            local query = so.get_cursor_token()
+            if query == "" then query = vim.fn.expand("<cfile>") end
+            if query == "" then query = vim.fn.expand("<cword>") end
+            vim.api.nvim_feedkeys(
+              vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, true, true), "n", false
+            )
+            vim.schedule(function() so.open(query) end)
+          end,
+          desc = "Smart open file under cursor",
+        },
       }
     },
     -- Autocommands

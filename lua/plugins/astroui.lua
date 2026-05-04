@@ -14,6 +14,13 @@ return {
     -- colorscheme = "astrodark",
     -- colorscheme = "cyberdream",
     colorscheme = "sonokai",
+    status = {
+      components = {
+        mode = {
+          mode_text = { padding = { left = 1, right = 1 } },
+        },
+      },
+    },
     -- AstroUI allows you to easily modify highlight groups easily for any and all colorschemes
     highlights = {
       init = { -- this table overrides highlights in all themes
