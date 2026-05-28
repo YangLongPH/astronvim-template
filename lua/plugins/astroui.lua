@@ -12,8 +12,8 @@ return {
   opts = {
     -- change colorscheme
     -- colorscheme = "astrodark",
-    -- colorscheme = "cyberdream",
-    colorscheme = "sonokai",
+    colorscheme = "cyberdream",
+    -- colorscheme = "sonokai",
     status = {
       components = {
         mode = {
