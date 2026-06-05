@@ -9,6 +9,6 @@ return {
   init = function()
     vim.g.mkdp_auto_close = 1
     vim.g.mkdp_open_to_the_world = 0
-    vim.g.mkdp_browser = ""
+    vim.g.mkdp_browser = "google-chrome"
   end,
 }
