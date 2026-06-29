@@ -8,6 +8,7 @@ return {
         opts.cmd = {
           vim.fn.stdpath "data" .. "/mason/bin/jdtls",
           "--java-executable", java21,
+          "--jvm-arg=-javaagent:" .. vim.fn.stdpath "data" .. "/mason/share/jdtls/lombok.jar",
         }
       end
       return opts
